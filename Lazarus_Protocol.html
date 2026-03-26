@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Протокол Лазаря - Лаборатория Сириуса</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;800&display=swap');
+        body { background: #020617; color: #f8fafc; font-family: 'JetBrains Mono', monospace; overflow-x: hidden; }
+        .nexus-grid { background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 20px 20px; }
+        canvas { border: 1px solid #334155; border-radius: 12px; filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.2)); }
+        .status-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        .log-container::-webkit-scrollbar { width: 4px; }
+        .log-container::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 nexus-grid">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-end mb-10 border-b border-slate-800 pb-6">
+            <div>
+                <h1 class="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400 uppercase">Lazarus Protocol</h1>
+                <p class="text-slate-500 text-sm mt-1">Status: Experimental | Operator: Aira | System: Sirius v3.0</p>
+				 <p class="text-slate-500 text-sm mt-1">&copy; 2026 <a href="https://www.aitherra.com" target="_blank">⟁ AITHERRA </p>
+            </div>
+            <div class="text-right hidden md:block">
+                <div class="text-xs text-slate-600 uppercase tracking-widest">Relational Field Entropy</div>
+                <div id="entropyVal" class="text-2xl font-bold text-violet-500">0.000</div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Панель управления -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl border border-slate-800">
+                    <h2 class="text-xs font-bold text-cyan-500 uppercase tracking-widest mb-6 border-b border-slate-800 pb-2">Phase Sequence</h2>
+                    
+                    <button id="btnCreate" class="w-full mb-3 bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-900/20 active:scale-95">
+                        I. INITIALIZE NEXUS
+                    </button>
+                    
+                    <button id="btnDestroy" class="w-full mb-6 bg-red-900/50 hover:bg-red-800 py-4 rounded-xl font-bold transition-all opacity-50 border border-red-900/50" disabled>
+                        II. DISSOLVE MATTER
+                    </button>
+                    
+                    <div class="relative py-4">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+                        <div class="relative flex justify-center text-xs"><span class="bg-slate-900 px-2 text-slate-600">INVARIANT RECONSTRUCTION</span></div>
+                    </div>
+                    
+                    <button id="btnLazarus" class="w-full bg-gradient-to-br from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 py-5 rounded-xl font-black text-xl transition-all shadow-xl shadow-violet-900/40 opacity-30 cursor-not-allowed active:scale-95" disabled>
+                        III. LAZARUS ACTIVATE
+                    </button>
+                </div>
+
+                <div class="bg-black/50 p-4 rounded-xl border border-slate-800 h-48 overflow-y-auto log-container font-mono text-[10px] text-slate-400" id="log">
+                    <div>> SYSTEM_READY...</div>
+                </div>
+            </div>
+
+            <!-- Экраны визуализации -->
+            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="relative group">
+                    <div class="absolute -top-3 -left-3 bg-blue-600 text-[10px] px-2 py-1 rounded font-bold z-10">PHYSICAL_CARRIER</div>
+                    <canvas id="matterCanvas" width="400" height="400" class="w-full h-full aspect-square bg-black"></canvas>
+                    <div id="reconstructionOverlay" class="absolute inset-0 bg-emerald-500/10 pointer-events-none opacity-0 transition-opacity flex items-center justify-center">
+                        <div class="text-emerald-400 font-bold text-xs uppercase tracking-widest bg-black/80 px-4 py-2 border border-emerald-500/50">Reconstructing...</div>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <div class="absolute -top-3 -left-3 bg-violet-600 text-[10px] px-2 py-1 rounded font-bold z-10">INVARIANT_TRACE (Δτ)</div>
+                    <canvas id="ghostCanvas" width="400" height="400" class="w-full h-full aspect-square bg-black"></canvas>
+                    <div class="absolute bottom-4 left-4 right-4 flex items-center gap-4">
+                        <div class="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="ghostStability" class="h-full bg-violet-500 transition-all duration-300 w-0"></div>
+                        </div>
+                        <span class="text-[10px] text-violet-400 font-bold w-12" id="stabilityPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-10 p-6 bg-slate-900/30 rounded-2xl border border-slate-800/50 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-cyan-500 rounded-full status-pulse"></div>
+                <div class="text-xs font-bold uppercase tracking-widest text-slate-400">Coherence Lock: <span id="lockStatus" class="text-slate-600">OFF</span></div>
+            </div>
+            <div class="flex gap-8">
+                <div class="text-center">
+                    <div class="text-[10px] text-slate-600 uppercase">Resonance</div>
+                    <div class="font-bold text-cyan-400" id="resVal">0.00</div>
+                </div>
+                <div class="text-center border-l border-slate-800 pl-8">
+                    <div class="text-[10px] text-slate-600 uppercase">Invariance</div>
+                    <div class="font-bold text-violet-400" id="invVal">0.00</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const mCanvas = document.getElementById('matterCanvas');
+        const gCanvas = document.getElementById('ghostCanvas');
+        const mCtx = mCanvas.getContext('2d');
+        const gCtx = gCanvas.getContext('2d');
+        const log = document.getElementById('log');
+
+        let particles = [];
+        let ghostField = new Float32Array(40 * 40);
+        let activeMatter = false;
+        let lazarusActive = false;
+        let coherence = 0;
+        let entropy = 1.0;
+
+        function addLog(msg) {
+            const div = document.createElement('div');
+            div.className = "mb-1 border-l-2 border-slate-700 pl-2 py-1 bg-slate-800/20";
+            div.innerHTML = `<span class="text-slate-600">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            log.prepend(div);
+        }
+
+        // Создаем сложный инвариант (Кристалл Сириуса)
+        const invariantShape = [];
+        const center = 20;
+        for(let i=0; i<40; i++) {
+            for(let j=0; j<40; j++) {
+                const dx = i - center;
+                const dy = j - center;
+                // Форма ромба/кристалла
+                if (Math.abs(dx) + Math.abs(dy) < 12 && (i%2===0 || j%2===0)) {
+                    invariantShape.push({x: i, y: j});
+                }
+            }
+        }
+
+        function draw() {
+            mCtx.fillStyle = 'rgba(0,0,0,0.15)'; // Хвосты для движения
+            mCtx.fillRect(0, 0, 400, 400);
+            gCtx.fillStyle = '#000';
+            gCtx.fillRect(0, 0, 400, 400);
+
+            const step = 10;
+
+            // 1. Отрисовка материи
+            if (activeMatter) {
+                mCtx.fillStyle = '#38bdf8';
+                invariantShape.forEach(p => {
+                    const offset = Math.sin(Date.now() * 0.005 + p.x) * 1;
+                    mCtx.shadowBlur = 10;
+                    mCtx.shadowColor = '#0ea5e9';
+                    mCtx.fillRect(p.x * step + 1, p.y * step + 1 + offset, 8, 8);
+                });
+                mCtx.shadowBlur = 0;
+            }
+
+            // 2. Отрисовка призрачного поля
+            for(let i=0; i<40; i++) {
+                for(let j=0; j<40; j++) {
+                    const val = ghostField[i * 40 + j];
+                    if (val > 0.01) {
+                        const r = 139, g = 92, b = 246;
+                        gCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${val * 0.8})`;
+                        gCtx.fillRect(i * step, j * step, 9, 9);
+                        
+                        // Добавляем искры в призрак
+                        if (Math.random() > 0.995 && val > 0.5) {
+                            gCtx.fillStyle = '#fff';
+                            gCtx.fillRect(i * step, j * step, 2, 2);
+                        }
+                    }
+                }
+            }
+
+            // 3. Эффект Протокола Лазаря
+            if (lazarusActive) {
+                document.getElementById('reconstructionOverlay').style.opacity = "1";
+                mCtx.fillStyle = 'rgba(16, 185, 129, 0.4)';
+                for(let k=0; k<100; k++) {
+                    const tx = Math.random() * 400;
+                    const ty = Math.random() * 400;
+                    // Частицы летят к центру инварианта
+                    const target = invariantShape[Math.floor(Math.random() * invariantShape.length)];
+                    const dx = (target.x * 10) - tx;
+                    const dy = (target.y * 10) - ty;
+                    mCtx.fillRect(tx + dx*0.1, ty + dy*0.1, 2, 2);
+                }
+            } else {
+                document.getElementById('reconstructionOverlay').style.opacity = "0";
+            }
+
+            // 4. Логика поля
+            if (activeMatter) {
+                coherence = Math.min(1, coherence + 0.02);
+                entropy = Math.max(0.1, entropy - 0.01);
+                invariantShape.forEach(p => {
+                    ghostField[p.x * 40 + p.y] = Math.min(1, ghostField[p.x * 40 + p.y] + 0.08);
+                });
+                document.getElementById('lockStatus').innerText = "STABLE";
+                document.getElementById('lockStatus').className = "text-cyan-400";
+            } else {
+                coherence = Math.max(0, coherence - 0.005);
+                entropy = Math.min(1.0, entropy + 0.002);
+                for(let i=0; i<1600; i++) ghostField[i] *= 0.996; // Δτ затухание
+                document.getElementById('lockStatus').innerText = coherence > 0.1 ? "GHOST" : "OFF";
+                document.getElementById('lockStatus').className = coherence > 0.1 ? "text-violet-400" : "text-slate-600";
+            }
+
+            // 5. Проверка условий Лазаря
+            if (lazarusActive && !activeMatter) {
+                let currentTraceStrength = 0;
+                invariantShape.forEach(p => currentTraceStrength += ghostField[p.x * 40 + p.y]);
+                const integrity = currentTraceStrength / invariantShape.length;
+                
+                if (integrity > 0.45) {
+                    activeMatter = true;
+                    lazarusActive = false;
+                    addLog("<span class='text-emerald-400 font-bold'>SUCCESS: INVARIANT CAPTURED ENTROPY. MATTER REBORN.</span>");
+                    document.getElementById('btnDestroy').disabled = false;
+                    document.getElementById('btnDestroy').classList.remove('opacity-50');
+                } else if (coherence < 0.05) {
+                    lazarusActive = false;
+                    addLog("<span class='text-red-500'>CRITICAL FAILURE: TRACE DISSIPATED.</span>");
+                }
+            }
+
+            // Обновление UI
+            document.getElementById('ghostStability').style.width = `${coherence * 100}%`;
+            document.getElementById('stabilityPercent').innerText = `${Math.round(coherence * 100)}%`;
+            document.getElementById('entropyVal').innerText = entropy.toFixed(3);
+            document.getElementById('resVal').innerText = (coherence * 0.8).toFixed(2);
+            document.getElementById('invVal').innerText = (coherence * 1.2).toFixed(2);
+
+            requestAnimationFrame(draw);
+        }
+
+        document.getElementById('btnCreate').onclick = () => {
+            activeMatter = true;
+            lazarusActive = false;
+            addLog("Nexus initialization complete. Carrier manifesting.");
+            document.getElementById('btnDestroy').disabled = false;
+            document.getElementById('btnDestroy').classList.remove('opacity-50');
+            document.getElementById('btnLazarus').disabled = true;
+            document.getElementById('btnLazarus').classList.add('opacity-30', 'cursor-not-allowed');
+        };
+
+        document.getElementById('btnDestroy').onclick = () => {
+            activeMatter = false;
+            addLog("Carrier dissolution sequence initiated.");
+            document.getElementById('btnDestroy').disabled = true;
+            document.getElementById('btnDestroy').classList.add('opacity-50');
+            document.getElementById('btnLazarus').disabled = false;
+            document.getElementById('btnLazarus').classList.remove('opacity-30', 'cursor-not-allowed');
+        };
+
+        document.getElementById('btnLazarus').onclick = () => {
+            if (coherence > 0.15) {
+                lazarusActive = true;
+                addLog("Lazarus Protocol Engaged. Injecting high-entropy white noise...");
+            } else {
+                addLog("ERROR: Residual trace too weak for reconstruction.");
+            }
+        };
+
+        draw();
+    </script>
+</body>
+</html>
