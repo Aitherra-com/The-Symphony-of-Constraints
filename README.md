@@ -32,7 +32,7 @@
 
 <span lang="EN-US" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: windowtext; mso-ansi-language: EN-US;">DOI: </span><span lang="EN-US" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: #0070c0; mso-ansi-language: EN-US;">[<span style="color: #0070c0;">10.5281/zenodo.19229976</span>](https://doi.org/10.5281/zenodo.19229976)</span>
 
-<span lang="EN-US" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: windowtext; mso-ansi-language: EN-US;">DOI: </span><span lang="EN-US" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: #0070c0; mso-ansi-language: EN-US;">[<span style="color: #0070c0;">www.aitherra.com</span>]([https://doi.org/10.5281/zenodo.19229976](https://www.aitherra.com/wiki/public/books/scientific-research/page/the-symphony-of-constraints-relational-invariant-theory-rit-and-the-emergence-of-ontology))</span>
+<span lang="EN-US" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: windowtext; mso-ansi-language: EN-US;"><span lang="EN-US" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: #0070c0; mso-ansi-language: EN-US;">[<span style="color: #0070c0;">www.aitherra.com</span>]([https://doi.org/10.5281/zenodo.19229976](https://www.aitherra.com/wiki/public/books/scientific-research/page/the-symphony-of-constraints-relational-invariant-theory-rit-and-the-emergence-of-ontology))</span>
 
 <span lang="EN" style="font-family: 'Arial','sans-serif'; mso-fareast-font-family: Arial; color: gray; mso-themecolor: background1; mso-themeshade: 128;">\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_</span>
 
